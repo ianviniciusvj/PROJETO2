@@ -1,0 +1,33 @@
+syntax = "proto3";
+package miner;
+
+// Mensagens simples
+message Empty {}
+message IntReply { int32 value = 1; }
+
+// Requisições e respostas
+message TxRequest { int32 txid = 1; }
+message ChallengeReply { int32 challenge = 1; }     // -1 se inválido
+message StatusReply { int32 status = 1; }           // -1 inválido, 0 resolvido, 1 pendente
+message WinnerReply { int32 winner = 1; }           // -1 inválido, 0 sem vencedor, >0 client id
+message SolutionInfo { int32 status = 1; string solution = 2; int32 challenge = 3; }
+
+// Submit
+message SubmitRequest {
+  int32 txid = 1;
+  int32 client_id = 2;
+  string solution = 3;
+}
+message SubmitReply {
+  int32 result = 1; // 1=válida,0=inválida,2=já solucionado,-1=txid inválida
+}
+
+// Serviço Miner
+service Miner {
+  rpc getTransactionID(Empty) returns (IntReply);
+  rpc getChallenge(TxRequest) returns (ChallengeReply);
+  rpc getTransactionStatus(TxRequest) returns (StatusReply);
+  rpc submitChallenge(SubmitRequest) returns (SubmitReply);
+  rpc getWinner(TxRequest) returns (WinnerReply);
+  rpc getSolution(TxRequest) returns (SolutionInfo);
+}
